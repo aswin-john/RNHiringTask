@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import colors from '../../theme/colors';
 import typography from '../../theme/typography';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 /**
  * AppInput — reusable form input with optional password show/hide toggle.
@@ -40,7 +41,12 @@ const AppInput = ({ label, icon, secureText = false, style, ...rest }) => {
                     <TouchableOpacity
                         onPress={() => setIsSecure(prev => !prev)}
                         hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                        <Text style={styles.eyeIcon}>{isSecure ? '👁️' : '🙈'}</Text>
+                        <Icon
+                            name={isSecure ? 'eye-off-outline' : 'eye-outline'}
+                            size={20}
+                            color={colors.textMuted}
+                            style={{ paddingLeft: 8 }}
+                        />
                     </TouchableOpacity>
                 )}
             </View>
