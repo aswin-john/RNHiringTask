@@ -1,17 +1,19 @@
 # 📦 Inventory App – React Native + Appwrite
 
-A mobile inventory management application built with React Native (bare workflow) and Appwrite Cloud as the backend. Supports user authentication and full product CRUD with image uploads.
+A mobile inventory management app built with React Native (bare workflow) and Appwrite Cloud. Each authenticated user manages their own private product catalog with image uploads.
 
 ---
 
 ## ✨ Features
 
-- **Authentication** – Register, Login, Logout with persistent sessions
-- **Product Listing** – Searchable, pull-to-refresh product list with low-stock badges
-- **Product Detail** – Hero image, info rows, quick Edit & Delete
-- **Add / Edit Product** – Image picker, form validation, Appwrite Storage upload
-- **Safe Area** – Handles notches and status bars on all screens
-- **Design System** – Global color palette, typography tokens, reusable components
+- **Authentication** — Register, Login, Logout with persistent sessions
+- **Private Inventory** — Each user sees only their own products (scoped by `userId`)
+- **Product Listing** — Real-time debounced search, pull-to-refresh, low-stock badges
+- **Product Detail** — Hero image, info rows, Edit & Delete actions
+- **Add / Edit Product** — Image picker, form validation, Appwrite Storage upload
+- **Custom Alerts** — Styled modal popups replacing native alerts throughout the app
+- **Vector Icons** — Ionicons used throughout (no emoji in UI)
+- **Safe Area** — Handles notches and status bars on all screens
 
 ---
 
@@ -24,20 +26,20 @@ A mobile inventory management application built with React Native (bare workflow
 | Android Studio | Hedgehog or newer |
 | Android SDK | API 33+ |
 | Java (JDK) | 17 |
-| An Appwrite Cloud account | [cloud.appwrite.io](https://cloud.appwrite.io) |
+| Appwrite Cloud account | [cloud.appwrite.io](https://cloud.appwrite.io) |
 
 ---
 
 ## ⚙️ Appwrite Cloud Setup
 
 ### 1. Create a Project
-1. Go to [cloud.appwrite.io](https://cloud.appwrite.io) and create a new project
-2. Note the **Project ID** from the project settings
+1. Go to [cloud.appwrite.io](https://cloud.appwrite.io) → create a new project
+2. Note the **Project ID** from project settings
 
 ### 2. Create the Database & Collection
-1. Go to **Databases** → **Create database** (name: `inventory_db`)
-2. Inside the database → **Create collection** (name/ID: `products`)
-3. Add the following **columns** to the collection:
+1. **Databases** → **Create database** — name: `inventory_db`
+2. Inside it → **Create collection** — name/ID: `products`
+3. Add these **columns**:
 
 | Key | Type | Required |
 |---|---|---|
@@ -46,39 +48,34 @@ A mobile inventory management application built with React Native (bare workflow
 | `quantity` | Integer | ✅ |
 | `category` | Text | ✅ |
 | `imageId` | Text | ✅ |
+| `userId` | Text | ✅ |
 
-4. Go to **Settings → Permissions** of the `products` collection:
-   - Add role: **All users** → check ✅ Create, Read, Update, Delete
+4. **Settings → Permissions** of the `products` collection:
+   - Role: **All users** → ✅ Create, Read, Update, Delete
 
 ### 3. Create a Storage Bucket
-1. Go to **Storage** → **Create bucket** (name: `product_images`)
-2. Note the **Bucket ID**
-3. Go to **Settings → Permissions** of the bucket:
-   - Add role: **All users** → check ✅ Create, Update, Delete
-   - Add role: **Any** → check ✅ Read *(allows images to load without auth headers)*
+1. **Storage** → **Create bucket** — name: `product_images`, note the **Bucket ID**
+2. **Settings → Permissions** of the bucket:
+   - Role: **All users** → ✅ Create, Update, Delete
+   - Role: **Any** → ✅ Read *(allows images to load without auth headers)*
 
 ### 4. Enable Full-Text Search (Optional)
-1. Go to **Database → products → Indexes → Create index**
-   - Key: `name_search`, Type: `Fulltext`, Column: `name`
+**Database → products → Indexes → Create index:**
+- Key: `name_search` | Type: `Fulltext` | Column: `name`
 
 ---
 
 ## 🚀 Getting Started
 
-### 1. Clone the repository
+### 1. Clone & install
 
 ```bash
 git clone <your-repo-url>
 cd RNHiringTask
-```
-
-### 2. Install dependencies
-
-```bash
 npm install
 ```
 
-### 3. Configure environment variables
+### 2. Configure environment variables
 
 Create a `.env` file in the project root:
 
@@ -90,15 +87,13 @@ APPWRITE_COLLECTION_ID=products
 APPWRITE_BUCKET_ID=your_bucket_id
 ```
 
-> ⚠️ Never commit `.env` to version control. It is already listed in `.gitignore`.
+> ⚠️ `.env` is in `.gitignore` — never commit it.
 
-### 4. Run on Android
+### 3. Run on Android
 
 ```bash
 npx react-native run-android
 ```
-
-> Make sure an Android emulator is running or a physical device is connected via USB with USB debugging enabled.
 
 ---
 
@@ -106,21 +101,21 @@ npx react-native run-android
 
 ```
 src/
-├── components/
-│   └── ui/
-│       ├── AppButton.jsx       # Reusable button (primary, auth, outline)
-│       └── AppInput.jsx        # Reusable text input with password toggle
+├── components/ui/
+│   ├── AppButton.jsx        # Reusable button (primary / auth / outline)
+│   └── AppInput.jsx         # Text input with password eye-toggle (Ionicons)
 ├── config/
-│   └── appwrite.js             # Appwrite client & service initialization
+│   └── appwrite.js          # Appwrite client & service instances
 ├── context/
-│   └── AuthContext.jsx         # Global auth state (login, signup, logout)
+│   ├── AlertContext.jsx     # Global custom modal alert system
+│   └── AuthContext.jsx      # Auth state (login, signup, logout, session restore)
 ├── hooks/
-│   ├── useDebounce.js          # Debounce hook for search input
-│   └── useImagePicker.js       # react-native-image-picker wrapper
+│   ├── useDebounce.js       # Debounce hook for search
+│   └── useImagePicker.js    # react-native-image-picker wrapper
 ├── navigation/
-│   ├── AppStack.jsx            # Authenticated screens stack
-│   ├── AuthStack.jsx           # Login / Register stack
-│   └── RootNavigator.jsx       # Conditional root navigator
+│   ├── AppStack.jsx         # Authenticated screens
+│   ├── AuthStack.jsx        # Login / Register screens
+│   └── RootNavigator.jsx    # Root navigator (auth gate)
 ├── screens/
 │   ├── auth/
 │   │   ├── LoginScreen.jsx
@@ -131,16 +126,16 @@ src/
 │       ├── ProductListScreen.jsx
 │       ├── ProductDetailScreen.jsx
 │       ├── ProductFormScreen.jsx
-│       ├── useProductList.js
-│       ├── useProductDetail.js
-│       └── useProductForm.js
+│       ├── useProductList.js    # Scoped fetch by userId, search, delete
+│       ├── useProductDetail.js  # Fetch single product, focus-aware refresh
+│       └── useProductForm.js    # Create / edit product with image upload
 ├── services/
-│   ├── authService.js          # Appwrite auth CRUD
-│   ├── productService.js       # Appwrite database CRUD
-│   └── storageService.js       # Appwrite storage upload/delete/URL
+│   ├── authService.js       # Appwrite Auth CRUD
+│   ├── productService.js    # Appwrite Database CRUD (userId-filtered)
+│   └── storageService.js    # Appwrite Storage upload / delete / URL
 └── theme/
-    ├── colors.js               # Global color palette
-    └── typography.js           # Font styles & spacing tokens
+    ├── colors.js            # Global color palette
+    └── typography.js        # Font styles & spacing tokens
 ```
 
 ---
@@ -153,16 +148,16 @@ src/
 | `@react-navigation/native` | Navigation container |
 | `@react-navigation/native-stack` | Stack navigator |
 | `react-native-safe-area-context` | Notch / status bar handling |
-| `react-native-screens` | Native screen optimization |
-| `react-native-vector-icons` | UI icons (Ionicons) |
+| `react-native-vector-icons` | Ionicons used across all screens |
 | `react-native-image-picker` | Camera & gallery access |
-| `react-native-config` | `.env` variable access |
+| `react-native-config` | `.env` variable access at runtime |
 
 ---
 
 ## 🔐 Security Notes
 
-- All Appwrite credentials are stored in `.env` and excluded from git
-- Session management is handled server-side by Appwrite
-- Product images use public read access (no auth required to view)
-- Write operations (create/update/delete) require a valid user session
+- Credentials live in `.env`, excluded from git via `.gitignore`
+- Sessions are managed server-side by Appwrite
+- Products are scoped by `userId` — users cannot see each other's data
+- Product images use public read (`Any` role) so the native `Image` component can load them without sending auth headers
+- Write operations require a valid Appwrite session
