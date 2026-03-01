@@ -8,9 +8,9 @@ import {
     Image,
     KeyboardAvoidingView,
     Platform,
-    ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/Ionicons';
 import AppInput from '../../components/ui/AppInput';
 import AppButton from '../../components/ui/AppButton';
 import useProductForm from './useProductForm';
@@ -31,8 +31,6 @@ const ProductFormScreen = ({ route, navigation }) => {
         handleSubmit,
     } = useProductForm(existingProduct, navigation);
 
-    const insets = useSafeAreaInsets();
-
     return (
         <SafeAreaView style={styles.screen}>
             <KeyboardAvoidingView
@@ -43,7 +41,7 @@ const ProductFormScreen = ({ route, navigation }) => {
                     {/* Header */}
                     <View style={styles.header}>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                            <Text style={styles.backBtnText}>‹</Text>
+                            <Icon name="chevron-back" size={24} color={colors.textPrimary} />
                         </TouchableOpacity>
                         <Text style={styles.headerTitle}>{isEditing ? 'Edit Product' : 'Add Product'}</Text>
                         <View style={{ width: 40 }} />
@@ -55,12 +53,12 @@ const ProductFormScreen = ({ route, navigation }) => {
                             <Image source={{ uri: image.uri }} style={styles.pickedImage} />
                         ) : existingProduct?.imageId ? (
                             <View style={styles.imageHint}>
-                                <Text style={styles.imageHintIcon}>🖼️</Text>
+                                <Icon name="image-outline" size={40} color={colors.textSecondary} />
                                 <Text style={styles.imageHintText}>Tap to change image</Text>
                             </View>
                         ) : (
                             <View style={styles.imageHint}>
-                                <Text style={styles.imageHintIcon}>📷</Text>
+                                <Icon name="camera-outline" size={40} color={colors.textSecondary} />
                                 <Text style={styles.imageHintText}>Tap to add product image</Text>
                             </View>
                         )}
@@ -129,7 +127,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: colors.background,
     },
-    backBtnText: { fontSize: 28, color: colors.textPrimary, lineHeight: 34 },
     headerTitle: { ...typography.h2, color: colors.textPrimary },
     imagePicker: {
         height: 180,
@@ -144,8 +141,7 @@ const styles = StyleSheet.create({
         borderStyle: 'dashed',
     },
     pickedImage: { width: '100%', height: '100%' },
-    imageHint: { alignItems: 'center' },
-    imageHintIcon: { fontSize: 40, marginBottom: 8 },
+    imageHint: { alignItems: 'center', gap: 8 },
     imageHintText: { ...typography.bodySmall, color: colors.textSecondary },
     form: { paddingHorizontal: 20, paddingTop: 8 },
     submitBtn: { marginTop: 12 },

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useAuth } from '../../context/AuthContext';
 import useProductList from './useProductList';
 import { getImageUrl } from '../../services/storageService';
@@ -20,7 +21,7 @@ import typography from '../../theme/typography';
 
 const LOW_STOCK_THRESHOLD = 5;
 
-const ProductCard = ({ product, onPress, onDelete }) => {
+const ProductCard = ({ product, onPress }) => {
     const isLow = product.quantity <= LOW_STOCK_THRESHOLD;
     const imageUrl = product.imageId ? getImageUrl(product.imageId) : null;
 
@@ -31,7 +32,7 @@ const ProductCard = ({ product, onPress, onDelete }) => {
                 {imageUrl ? (
                     <Image source={{ uri: imageUrl }} style={styles.image} />
                 ) : (
-                    <Text style={styles.imagePlaceholder}>📦</Text>
+                    <Icon name="cube-outline" size={32} color={colors.primary} />
                 )}
             </View>
 
@@ -50,7 +51,7 @@ const ProductCard = ({ product, onPress, onDelete }) => {
                 <View style={[styles.badge, isLow ? styles.badgeLow : styles.badgeActive]}>
                     <Text style={styles.badgeText}>{isLow ? 'Low' : 'Active'}</Text>
                 </View>
-                <Text style={styles.chevron}>›</Text>
+                <Icon name="chevron-forward" size={20} color={colors.textMuted} />
             </View>
         </TouchableOpacity>
     );
@@ -64,7 +65,7 @@ const ProductListScreen = ({ navigation }) => {
         loading, searching, refreshing, refresh, handleDelete,
     } = useProductList();
 
-    // Re-fetch whenever this screen comes back into focus (e.g. after adding a product)
+    // Re-fetch whenever this screen comes back into focus
     useFocusEffect(
         useCallback(() => {
             refresh();
@@ -94,7 +95,7 @@ const ProductListScreen = ({ navigation }) => {
 
             {/* Search Bar */}
             <View style={styles.searchBar}>
-                <Text style={styles.searchIcon}>🔍</Text>
+                <Icon name="search-outline" size={18} color={colors.textMuted} style={{ marginRight: 8 }} />
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search products..."
@@ -119,7 +120,7 @@ const ProductListScreen = ({ navigation }) => {
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} colors={[colors.primary]} />}
                 ListEmptyComponent={
                     <View style={styles.emptyState}>
-                        <Text style={styles.emptyIcon}>📭</Text>
+                        <Icon name="file-tray-outline" size={64} color={colors.textMuted} />
                         <Text style={styles.emptyText}>No products yet.</Text>
                         <Text style={styles.emptySubtext}>Tap + to add your first product.</Text>
                     </View>
@@ -138,7 +139,7 @@ const ProductListScreen = ({ navigation }) => {
                 style={styles.fab}
                 onPress={() => navigation.navigate('ProductForm', { product: null })}
                 activeOpacity={0.85}>
-                <Text style={styles.fabText}>+</Text>
+                <Icon name="add" size={32} color="#FFFFFF" />
             </TouchableOpacity>
         </View>
     );
@@ -158,7 +159,6 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: colors.primary,
         paddingHorizontal: 20,
-        paddingTop: 20,
         paddingBottom: 24,
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.08,
         shadowRadius: 8,
     },
-    searchIcon: { fontSize: 16, marginRight: 8 },
     searchInput: {
         flex: 1,
         ...typography.body,
@@ -240,7 +239,6 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     image: { width: 64, height: 64 },
-    imagePlaceholder: { fontSize: 28 },
     cardInfo: { flex: 1 },
     cardName: {
         ...typography.h3,
@@ -264,12 +262,12 @@ const styles = StyleSheet.create({
     },
     cardRight: {
         alignItems: 'center',
+        gap: 8,
     },
     badge: {
         borderRadius: 100,
         paddingHorizontal: 8,
         paddingVertical: 4,
-        marginBottom: 8,
     },
     badgeActive: { backgroundColor: '#ECFDF5' },
     badgeLow: { backgroundColor: '#F5F3FF' },
@@ -278,16 +276,15 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         color: colors.textPrimary,
     },
-    chevron: { fontSize: 22, color: colors.textMuted },
     emptyState: {
         alignItems: 'center',
         paddingTop: 80,
+        gap: 8,
     },
-    emptyIcon: { fontSize: 48, marginBottom: 12 },
     emptyText: {
         ...typography.h3,
         color: colors.textSecondary,
-        marginBottom: 6,
+        marginTop: 8,
     },
     emptySubtext: {
         ...typography.bodySmall,
@@ -309,7 +306,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.35,
         shadowRadius: 8,
     },
-    fabText: { color: '#FFFFFF', fontSize: 30, lineHeight: 34 },
 });
 
 export default ProductListScreen;

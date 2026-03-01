@@ -9,6 +9,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/Ionicons';
 import useProductDetail from './useProductDetail';
 import { getImageUrl } from '../../services/storageService';
 import colors from '../../theme/colors';
@@ -26,7 +27,7 @@ const ProductDetailScreen = ({ route, navigation }) => {
     const { product: initialProduct } = route.params;
     const { product, loading, handleDelete } = useProductDetail(initialProduct.$id, navigation);
 
-    const data = product || initialProduct; // show initial data while loading
+    const data = product || initialProduct;
     const imageUrl = data.imageId ? getImageUrl(data.imageId) : null;
     const isLowStock = data.quantity <= 5;
 
@@ -47,20 +48,19 @@ const ProductDetailScreen = ({ route, navigation }) => {
                         <Image source={{ uri: imageUrl }} style={styles.heroImage} />
                     ) : (
                         <View style={styles.imageFallback}>
-                            <Text style={styles.imageFallbackText}>📦</Text>
+                            <Icon name="cube-outline" size={80} color={colors.primary} />
                         </View>
                     )}
                     {/* Back Button */}
                     <TouchableOpacity
                         style={[styles.backBtn, { top: 16 + insets.top }]}
                         onPress={() => navigation.goBack()}>
-                        <Text style={styles.backBtnText}>‹</Text>
+                        <Icon name="chevron-back" size={24} color={colors.textPrimary} />
                     </TouchableOpacity>
                 </View>
 
                 {/* Detail Card */}
                 <View style={styles.card}>
-                    {/* Title row */}
                     <View style={styles.titleRow}>
                         <Text style={styles.productName}>{data.name}</Text>
                         <View style={[styles.badge, isLowStock ? styles.badgeLow : styles.badgeActive]}>
@@ -69,7 +69,6 @@ const ProductDetailScreen = ({ route, navigation }) => {
                     </View>
 
                     <Text style={styles.category}>{data.category}</Text>
-
                     <View style={styles.divider} />
 
                     <InfoRow label="Price" value={`₹${data.price}`} />
@@ -81,12 +80,14 @@ const ProductDetailScreen = ({ route, navigation }) => {
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.editBtn]}
                             onPress={() => navigation.navigate('ProductForm', { product: data })}>
-                            <Text style={styles.editBtnText}>✏️  Edit</Text>
+                            <Icon name="pencil-outline" size={18} color="#FFFFFF" style={{ marginRight: 6 }} />
+                            <Text style={styles.editBtnText}>Edit</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.actionBtn, styles.deleteBtn]}
                             onPress={handleDelete}>
-                            <Text style={styles.deleteBtnText}>🗑  Delete</Text>
+                            <Icon name="trash-outline" size={18} color={colors.error} style={{ marginRight: 6 }} />
+                            <Text style={styles.deleteBtnText}>Delete</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -104,10 +105,8 @@ const styles = StyleSheet.create({
     },
     heroImage: { width: '100%', height: '100%' },
     imageFallback: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    imageFallbackText: { fontSize: 80 },
     backBtn: {
         position: 'absolute',
-        top: 16,
         left: 16,
         width: 40,
         height: 40,
@@ -117,7 +116,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         elevation: 3,
     },
-    backBtnText: { fontSize: 28, color: colors.textPrimary, lineHeight: 34 },
     card: {
         backgroundColor: colors.surface,
         borderTopLeftRadius: 24,
@@ -150,7 +148,7 @@ const styles = StyleSheet.create({
     infoLabel: { ...typography.label, color: colors.textSecondary },
     infoValue: { ...typography.body, color: colors.textPrimary, fontWeight: '600' },
     actions: { flexDirection: 'row', gap: 12, marginTop: 28 },
-    actionBtn: { flex: 1, borderRadius: 100, paddingVertical: 14, alignItems: 'center' },
+    actionBtn: { flex: 1, borderRadius: 100, paddingVertical: 14, alignItems: 'center', flexDirection: 'row', justifyContent: 'center' },
     editBtn: { backgroundColor: colors.primary },
     editBtnText: { ...typography.button, color: '#FFFFFF' },
     deleteBtn: { backgroundColor: '#FEE2E2' },
