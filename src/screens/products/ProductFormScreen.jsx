@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import AppInput from '../../components/ui/AppInput';
 import AppButton from '../../components/ui/AppButton';
 import useProductForm from './useProductForm';
+import { getImageUrl } from '../../services/storageService';
 import colors from '../../theme/colors';
 import typography from '../../theme/typography';
 
@@ -30,6 +31,10 @@ const ProductFormScreen = ({ route, navigation }) => {
         isEditing,
         handleSubmit,
     } = useProductForm(existingProduct, navigation);
+
+    const existingImageUrl = existingProduct?.imageId
+        ? getImageUrl(existingProduct.imageId)
+        : null;
 
     return (
         <SafeAreaView style={styles.screen}>
@@ -50,13 +55,19 @@ const ProductFormScreen = ({ route, navigation }) => {
                     {/* Image Picker */}
                     <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
                         {image ? (
+                            // Newly selected image
                             <Image source={{ uri: image.uri }} style={styles.pickedImage} />
-                        ) : existingProduct?.imageId ? (
-                            <View style={styles.imageHint}>
-                                <Icon name="image-outline" size={40} color={colors.textSecondary} />
-                                <Text style={styles.imageHintText}>Tap to change image</Text>
+                        ) : existingImageUrl ? (
+                            // Existing product image shown in edit mode
+                            <View style={{ width: '100%', height: '100%' }}>
+                                <Image source={{ uri: existingImageUrl }} style={styles.pickedImage} />
+                                <View style={styles.changeOverlay}>
+                                    <Icon name="camera-outline" size={22} color="#FFFFFF" />
+                                    <Text style={styles.changeText}>Tap to change</Text>
+                                </View>
                             </View>
                         ) : (
+                            // No image yet
                             <View style={styles.imageHint}>
                                 <Icon name="camera-outline" size={40} color={colors.textSecondary} />
                                 <Text style={styles.imageHintText}>Tap to add product image</Text>
@@ -143,6 +154,23 @@ const styles = StyleSheet.create({
     pickedImage: { width: '100%', height: '100%' },
     imageHint: { alignItems: 'center', gap: 8 },
     imageHintText: { ...typography.bodySmall, color: colors.textSecondary },
+    changeOverlay: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: 'rgba(0,0,0,0.45)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 8,
+        gap: 6,
+    },
+    changeText: {
+        ...typography.bodySmall,
+        color: '#FFFFFF',
+        fontWeight: '600',
+    },
     form: { paddingHorizontal: 20, paddingTop: 8 },
     submitBtn: { marginTop: 12 },
 });
