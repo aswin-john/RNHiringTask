@@ -4,12 +4,14 @@ import { Alert } from 'react-native';
 import { listProducts, deleteProduct } from '../../services/productService';
 import { deleteImage } from '../../services/storageService';
 import useDebounce from '../../hooks/useDebounce';
+import { useAuth } from '../../context/AuthContext';
 
 const useProductList = () => {
+    const { user } = useAuth();
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState('');
-    const [loading, setLoading] = useState(true);     // initial full-screen load only
-    const [searching, setSearching] = useState(false); // silent search indicator
+    const [loading, setLoading] = useState(true);
+    const [searching, setSearching] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const isFirstLoad = useRef(true);
     const debouncedSearch = useDebounce(search, 400);
@@ -24,7 +26,7 @@ const useProductList = () => {
         }
 
         try {
-            const docs = await listProducts(debouncedSearch);
+            const docs = await listProducts(user.$id, debouncedSearch);
             setProducts(docs);
         } catch (e) {
             Alert.alert('Error', e.message || 'Failed to load products.');
@@ -34,7 +36,7 @@ const useProductList = () => {
             setSearching(false);
             isFirstLoad.current = false;
         }
-    }, [debouncedSearch]);
+    }, [debouncedSearch, user.$id]);
 
     useEffect(() => { fetch(); }, [fetch]);
 

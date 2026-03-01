@@ -3,8 +3,10 @@ import { Alert } from 'react-native';
 import { createProduct, updateProduct } from '../../services/productService';
 import { uploadImage, deleteImage } from '../../services/storageService';
 import useImagePicker from '../../hooks/useImagePicker';
+import { useAuth } from '../../context/AuthContext';
 
 const useProductForm = (existingProduct, navigation) => {
+    const { user } = useAuth();
     const isEditing = !!existingProduct;
 
     const [name, setName] = useState('');
@@ -55,6 +57,8 @@ const useProductForm = (existingProduct, navigation) => {
                 quantity: parseInt(quantity, 10),
                 category: category.trim(),
                 imageId,
+                // Only set userId on create; never overwrite on edit
+                ...(!isEditing && { userId: user.$id }),
             };
 
             if (isEditing) {
