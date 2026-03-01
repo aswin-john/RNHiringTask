@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
     View,
     Text,
@@ -9,6 +9,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import useProductDetail from './useProductDetail';
 import { getImageUrl } from '../../services/storageService';
@@ -25,7 +26,14 @@ const InfoRow = ({ label, value }) => (
 const ProductDetailScreen = ({ route, navigation }) => {
     const insets = useSafeAreaInsets();
     const { product: initialProduct } = route.params;
-    const { product, loading, handleDelete } = useProductDetail(initialProduct.$id, navigation);
+    const { product, loading, fetchProduct, handleDelete } = useProductDetail(initialProduct.$id, navigation);
+
+    // Re-fetch fresh data every time this screen comes into focus (e.g. after editing)
+    useFocusEffect(
+        useCallback(() => {
+            fetchProduct();
+        }, [fetchProduct]),
+    );
 
     const data = product || initialProduct;
     const imageUrl = data.imageId ? getImageUrl(data.imageId) : null;

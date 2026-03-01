@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { Alert } from 'react-native';
 import { getProduct, deleteProduct } from '../../services/productService';
 import { deleteImage } from '../../services/storageService';
 
 const useProductDetail = (productId, navigation) => {
     const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        (async () => {
-            try {
-                const doc = await getProduct(productId);
-                setProduct(doc);
-            } catch (e) {
-                Alert.alert('Error', e.message || 'Failed to load product.');
-            } finally {
-                setLoading(false);
-            }
-        })();
+    // Exposed so ProductDetailScreen can call it via useFocusEffect
+    const fetchProduct = useCallback(async () => {
+        setLoading(true);
+        try {
+            const doc = await getProduct(productId);
+            setProduct(doc);
+        } catch (e) {
+            Alert.alert('Error', e.message || 'Failed to load product.');
+        } finally {
+            setLoading(false);
+        }
     }, [productId]);
 
     const handleDelete = () => {
@@ -43,7 +43,7 @@ const useProductDetail = (productId, navigation) => {
         );
     };
 
-    return { product, loading, handleDelete };
+    return { product, loading, fetchProduct, handleDelete };
 };
 
 export default useProductDetail;
