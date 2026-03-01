@@ -1,13 +1,13 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Alert } from 'react-native';
 import { listProducts, deleteProduct } from '../../services/productService';
 import { deleteImage } from '../../services/storageService';
 import useDebounce from '../../hooks/useDebounce';
 import { useAuth } from '../../context/AuthContext';
+import { useAlert } from '../../context/AlertContext';
 
 const useProductList = () => {
     const { user } = useAuth();
+    const { showAlert } = useAlert();
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(true);
@@ -22,14 +22,14 @@ const useProductList = () => {
         } else if (isFirstLoad.current) {
             setLoading(true);
         } else {
-            setSearching(true); // silent — list stays visible while fetching
+            setSearching(true);
         }
 
         try {
             const docs = await listProducts(user.$id, debouncedSearch);
             setProducts(docs);
         } catch (e) {
-            Alert.alert('Error', e.message || 'Failed to load products.');
+            showAlert('Error', e.message || 'Failed to load products.');
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -41,9 +41,9 @@ const useProductList = () => {
     useEffect(() => { fetch(); }, [fetch]);
 
     const handleDelete = (product) => {
-        Alert.alert(
+        showAlert(
             'Delete Product',
-            `Remove "${product.name}" ? `,
+            `Remove "${product.name}"? This action cannot be undone.`,
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
@@ -55,7 +55,7 @@ const useProductList = () => {
                             if (product.imageId) await deleteImage(product.imageId);
                             setProducts(prev => prev.filter(p => p.$id !== product.$id));
                         } catch (e) {
-                            Alert.alert('Error', e.message || 'Could not delete product.');
+                            showAlert('Error', e.message || 'Could not delete product.');
                         }
                     },
                 },

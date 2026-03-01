@@ -1,29 +1,29 @@
 import { useState, useCallback } from 'react';
-import { Alert } from 'react-native';
 import { getProduct, deleteProduct } from '../../services/productService';
 import { deleteImage } from '../../services/storageService';
+import { useAlert } from '../../context/AlertContext';
 
 const useProductDetail = (productId, navigation) => {
+    const { showAlert } = useAlert();
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    // Exposed so ProductDetailScreen can call it via useFocusEffect
     const fetchProduct = useCallback(async () => {
         setLoading(true);
         try {
             const doc = await getProduct(productId);
             setProduct(doc);
         } catch (e) {
-            Alert.alert('Error', e.message || 'Failed to load product.');
+            showAlert('Error', e.message || 'Failed to load product.');
         } finally {
             setLoading(false);
         }
     }, [productId]);
 
     const handleDelete = () => {
-        Alert.alert(
+        showAlert(
             'Delete Product',
-            `Remove "${product?.name}"?`,
+            `Remove "${product?.name}"? This action cannot be undone.`,
             [
                 { text: 'Cancel', style: 'cancel' },
                 {
@@ -35,7 +35,7 @@ const useProductDetail = (productId, navigation) => {
                             if (product.imageId) await deleteImage(product.imageId);
                             navigation.goBack();
                         } catch (e) {
-                            Alert.alert('Error', e.message || 'Could not delete product.');
+                            showAlert('Error', e.message || 'Could not delete product.');
                         }
                     },
                 },

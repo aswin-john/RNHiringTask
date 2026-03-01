@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
 import { createProduct, updateProduct } from '../../services/productService';
 import { uploadImage, deleteImage } from '../../services/storageService';
 import useImagePicker from '../../hooks/useImagePicker';
 import { useAuth } from '../../context/AuthContext';
+import { useAlert } from '../../context/AlertContext';
 
 const useProductForm = (existingProduct, navigation) => {
     const { user } = useAuth();
+    const { showAlert } = useAlert();
     const isEditing = !!existingProduct;
 
     const [name, setName] = useState('');
@@ -15,9 +16,8 @@ const useProductForm = (existingProduct, navigation) => {
     const [category, setCategory] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { image, pickImage, setImage } = useImagePicker();
+    const { image, pickImage } = useImagePicker();
 
-    // Pre-fill if editing
     useEffect(() => {
         if (existingProduct) {
             setName(existingProduct.name || '');
@@ -28,10 +28,10 @@ const useProductForm = (existingProduct, navigation) => {
     }, [existingProduct]);
 
     const validate = () => {
-        if (!name.trim()) { Alert.alert('Validation', 'Product name is required.'); return false; }
-        if (!price || isNaN(Number(price))) { Alert.alert('Validation', 'Enter a valid price.'); return false; }
-        if (!quantity || isNaN(Number(quantity))) { Alert.alert('Validation', 'Enter a valid quantity.'); return false; }
-        if (!category.trim()) { Alert.alert('Validation', 'Category is required.'); return false; }
+        if (!name.trim()) { showAlert('Validation', 'Product name is required.'); return false; }
+        if (!price || isNaN(Number(price))) { showAlert('Validation', 'Enter a valid price.'); return false; }
+        if (!quantity || isNaN(Number(quantity))) { showAlert('Validation', 'Enter a valid quantity.'); return false; }
+        if (!category.trim()) { showAlert('Validation', 'Category is required.'); return false; }
         return true;
     };
 
@@ -42,9 +42,7 @@ const useProductForm = (existingProduct, navigation) => {
             let imageId = existingProduct?.imageId || '';
 
             if (image) {
-                // Upload new image
                 const newId = await uploadImage(image);
-                // If editing and had an old image, delete it
                 if (isEditing && existingProduct.imageId) {
                     await deleteImage(existingProduct.imageId).catch(() => { });
                 }
@@ -57,7 +55,6 @@ const useProductForm = (existingProduct, navigation) => {
                 quantity: parseInt(quantity, 10),
                 category: category.trim(),
                 imageId,
-                // Only set userId on create; never overwrite on edit
                 ...(!isEditing && { userId: user.$id }),
             };
 
@@ -68,7 +65,7 @@ const useProductForm = (existingProduct, navigation) => {
             }
             navigation.goBack();
         } catch (e) {
-            Alert.alert('Error', e.message || 'Failed to save product.');
+            showAlert('Error', e.message || 'Failed to save product.');
         } finally {
             setLoading(false);
         }
