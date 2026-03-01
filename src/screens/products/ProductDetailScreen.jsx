@@ -8,6 +8,7 @@ import {
     ScrollView,
     ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useProductDetail from './useProductDetail';
 import { getImageUrl } from '../../services/storageService';
 import colors from '../../theme/colors';
@@ -21,6 +22,7 @@ const InfoRow = ({ label, value }) => (
 );
 
 const ProductDetailScreen = ({ route, navigation }) => {
+    const insets = useSafeAreaInsets();
     const { product: initialProduct } = route.params;
     const { product, loading, handleDelete } = useProductDetail(initialProduct.$id, navigation);
 
@@ -49,7 +51,9 @@ const ProductDetailScreen = ({ route, navigation }) => {
                         </View>
                     )}
                     {/* Back Button */}
-                    <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+                    <TouchableOpacity
+                        style={[styles.backBtn, { top: 16 + insets.top }]}
+                        onPress={() => navigation.goBack()}>
                         <Text style={styles.backBtnText}>‹</Text>
                     </TouchableOpacity>
                 </View>

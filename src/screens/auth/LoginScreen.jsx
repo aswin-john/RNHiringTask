@@ -8,6 +8,7 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AppInput from '../../components/ui/AppInput';
 import AppButton from '../../components/ui/AppButton';
 import useLogin from './useLogin';
@@ -18,60 +19,62 @@ const LoginScreen = ({ navigation }) => {
     const { email, setEmail, password, setPassword, loading, error, handleLogin } = useLogin();
 
     return (
-        <KeyboardAvoidingView
-            style={styles.screen}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <ScrollView
-                contentContainerStyle={styles.container}
-                keyboardShouldPersistTaps="handled">
+        <SafeAreaView style={styles.screen}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <ScrollView
+                    contentContainerStyle={styles.container}
+                    keyboardShouldPersistTaps="handled">
 
-                {/* Top Icon */}
-                <View style={styles.iconCircle}>
-                    <Text style={styles.iconEmoji}>👤</Text>
-                </View>
+                    {/* Top Icon */}
+                    <View style={styles.iconCircle}>
+                        <Text style={styles.iconEmoji}>👤</Text>
+                    </View>
 
-                <Text style={styles.title}>Welcome Back</Text>
-                <Text style={styles.subtitle}>Sign in to continue</Text>
+                    <Text style={styles.title}>Welcome Back</Text>
+                    <Text style={styles.subtitle}>Sign in to continue</Text>
 
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
+                    {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-                <AppInput
-                    label="Email"
-                    // icon="✉️"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    placeholder="your@email.com"
-                />
+                    <AppInput
+                        label="Email"
+                        // icon="✉️"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        placeholder="your@email.com"
+                    />
 
-                <AppInput
-                    label="Password"
-                    // icon="🔒"
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="••••••••"
-                    secureText
-                />
+                    <AppInput
+                        label="Password"
+                        // icon="🔒"
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="••••••••"
+                        secureText
+                    />
 
-                <Text style={styles.forgotText}>Forgot your password?</Text>
+                    <Text style={styles.forgotText}>Forgot your password?</Text>
 
-                <AppButton
-                    title="LOGIN"
-                    variant="auth"
-                    loading={loading}
-                    onPress={handleLogin}
-                    style={styles.button}
-                />
+                    <AppButton
+                        title="LOGIN"
+                        variant="auth"
+                        loading={loading}
+                        onPress={handleLogin}
+                        style={styles.button}
+                    />
 
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Don't have an account? </Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-                        <Text style={styles.footerLink}>REGISTER</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                    <View style={styles.footer}>
+                        <Text style={styles.footerText}>Don't have an account? </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+                            <Text style={styles.footerLink}>REGISTER</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 

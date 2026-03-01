@@ -11,6 +11,7 @@ import {
     RefreshControl,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import useProductList from './useProductList';
 import { getImageUrl } from '../../services/storageService';
@@ -56,6 +57,7 @@ const ProductCard = ({ product, onPress, onDelete }) => {
 };
 
 const ProductListScreen = ({ navigation }) => {
+    const insets = useSafeAreaInsets();
     const { logout } = useAuth();
     const {
         products, search, setSearch,
@@ -80,7 +82,7 @@ const ProductListScreen = ({ navigation }) => {
     return (
         <View style={styles.screen}>
             {/* Header */}
-            <View style={styles.header}>
+            <View style={[styles.header, { paddingTop: 20 + insets.top }]}>
                 <View>
                     <Text style={styles.greeting}>Hello 👋</Text>
                     <Text style={styles.headerTitle}>My Inventory</Text>

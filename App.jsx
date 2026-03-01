@@ -1,14 +1,17 @@
 import React from 'react';
 import { StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider } from './src/context/AuthContext';
 import RootNavigator from './src/navigation/RootNavigator';
 
 const App = () => {
   return (
-    <AuthProvider>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <RootNavigator />
-    </AuthProvider>
+    <SafeAreaProvider>
+      <AuthProvider>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+        <RootNavigator />
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 };
 

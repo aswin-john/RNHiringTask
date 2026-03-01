@@ -10,6 +10,7 @@ import {
     Platform,
     ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppInput from '../../components/ui/AppInput';
 import AppButton from '../../components/ui/AppButton';
 import useProductForm from './useProductForm';
@@ -30,77 +31,81 @@ const ProductFormScreen = ({ route, navigation }) => {
         handleSubmit,
     } = useProductForm(existingProduct, navigation);
 
+    const insets = useSafeAreaInsets();
+
     return (
-        <KeyboardAvoidingView
-            style={styles.screen}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+        <SafeAreaView style={styles.screen}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
 
-                {/* Header */}
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-                        <Text style={styles.backBtnText}>‹</Text>
+                    {/* Header */}
+                    <View style={styles.header}>
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+                            <Text style={styles.backBtnText}>‹</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.headerTitle}>{isEditing ? 'Edit Product' : 'Add Product'}</Text>
+                        <View style={{ width: 40 }} />
+                    </View>
+
+                    {/* Image Picker */}
+                    <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
+                        {image ? (
+                            <Image source={{ uri: image.uri }} style={styles.pickedImage} />
+                        ) : existingProduct?.imageId ? (
+                            <View style={styles.imageHint}>
+                                <Text style={styles.imageHintIcon}>🖼️</Text>
+                                <Text style={styles.imageHintText}>Tap to change image</Text>
+                            </View>
+                        ) : (
+                            <View style={styles.imageHint}>
+                                <Text style={styles.imageHintIcon}>📷</Text>
+                                <Text style={styles.imageHintText}>Tap to add product image</Text>
+                            </View>
+                        )}
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>{isEditing ? 'Edit Product' : 'Add Product'}</Text>
-                    <View style={{ width: 40 }} />
-                </View>
 
-                {/* Image Picker */}
-                <TouchableOpacity style={styles.imagePicker} onPress={pickImage} activeOpacity={0.8}>
-                    {image ? (
-                        <Image source={{ uri: image.uri }} style={styles.pickedImage} />
-                    ) : existingProduct?.imageId ? (
-                        <View style={styles.imageHint}>
-                            <Text style={styles.imageHintIcon}>🖼️</Text>
-                            <Text style={styles.imageHintText}>Tap to change image</Text>
-                        </View>
-                    ) : (
-                        <View style={styles.imageHint}>
-                            <Text style={styles.imageHintIcon}>📷</Text>
-                            <Text style={styles.imageHintText}>Tap to add product image</Text>
-                        </View>
-                    )}
-                </TouchableOpacity>
+                    {/* Form Fields */}
+                    <View style={styles.form}>
+                        <AppInput
+                            label="Product Name"
+                            value={name}
+                            onChangeText={setName}
+                            placeholder="e.g. Running Shoes"
+                        />
+                        <AppInput
+                            label="Price (₹)"
+                            value={price}
+                            onChangeText={setPrice}
+                            placeholder="e.g. 499.99"
+                            keyboardType="decimal-pad"
+                        />
+                        <AppInput
+                            label="Quantity"
+                            value={quantity}
+                            onChangeText={setQuantity}
+                            placeholder="e.g. 50"
+                            keyboardType="number-pad"
+                        />
+                        <AppInput
+                            label="Category"
+                            value={category}
+                            onChangeText={setCategory}
+                            placeholder="e.g. Footwear"
+                        />
 
-                {/* Form Fields */}
-                <View style={styles.form}>
-                    <AppInput
-                        label="Product Name"
-                        value={name}
-                        onChangeText={setName}
-                        placeholder="e.g. Running Shoes"
-                    />
-                    <AppInput
-                        label="Price (₹)"
-                        value={price}
-                        onChangeText={setPrice}
-                        placeholder="e.g. 499.99"
-                        keyboardType="decimal-pad"
-                    />
-                    <AppInput
-                        label="Quantity"
-                        value={quantity}
-                        onChangeText={setQuantity}
-                        placeholder="e.g. 50"
-                        keyboardType="number-pad"
-                    />
-                    <AppInput
-                        label="Category"
-                        value={category}
-                        onChangeText={setCategory}
-                        placeholder="e.g. Footwear"
-                    />
-
-                    <AppButton
-                        title={isEditing ? 'SAVE CHANGES' : 'ADD PRODUCT'}
-                        variant="primary"
-                        loading={loading}
-                        onPress={handleSubmit}
-                        style={styles.submitBtn}
-                    />
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                        <AppButton
+                            title={isEditing ? 'SAVE CHANGES' : 'ADD PRODUCT'}
+                            variant="primary"
+                            loading={loading}
+                            onPress={handleSubmit}
+                            style={styles.submitBtn}
+                        />
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 

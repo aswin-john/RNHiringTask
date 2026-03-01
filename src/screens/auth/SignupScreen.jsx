@@ -8,6 +8,7 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AppInput from '../../components/ui/AppInput';
 import AppButton from '../../components/ui/AppButton';
 import useSignup from './useSignup';
@@ -24,76 +25,78 @@ const SignupScreen = ({ navigation }) => {
     } = useSignup();
 
     return (
-        <KeyboardAvoidingView
-            style={styles.screen}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <ScrollView
-                contentContainerStyle={styles.container}
-                keyboardShouldPersistTaps="handled">
+        <SafeAreaView style={styles.screen}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+                <ScrollView
+                    contentContainerStyle={styles.container}
+                    keyboardShouldPersistTaps="handled">
 
-                {/* Top Icon */}
-                <View style={styles.iconCircle}>
-                    <Text style={styles.iconEmoji}>📷</Text>
-                </View>
+                    {/* Top Icon */}
+                    <View style={styles.iconCircle}>
+                        <Text style={styles.iconEmoji}>📷</Text>
+                    </View>
 
-                <Text style={styles.title}>Create Account</Text>
-                <Text style={styles.subtitle}>Join us to get started</Text>
+                    <Text style={styles.title}>Create Account</Text>
+                    <Text style={styles.subtitle}>Join us to get started</Text>
 
-                {error ? <Text style={styles.errorText}>{error}</Text> : null}
+                    {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
-                <AppInput
-                    label="Full Name"
-                    // icon="👤"
-                    value={name}
-                    onChangeText={setName}
-                    placeholder="John Doe"
-                    autoCapitalize="words"
-                />
+                    <AppInput
+                        label="Full Name"
+                        // icon="👤"
+                        value={name}
+                        onChangeText={setName}
+                        placeholder="John Doe"
+                        autoCapitalize="words"
+                    />
 
-                <AppInput
-                    label="Email"
-                    // icon="✉️"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    placeholder="your@email.com"
-                />
+                    <AppInput
+                        label="Email"
+                        // icon="✉️"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        placeholder="your@email.com"
+                    />
 
-                <AppInput
-                    label="Password"
-                    // icon="🔒"
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholder="Min. 8 characters"
-                    secureText
-                />
+                    <AppInput
+                        label="Password"
+                        // icon="🔒"
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="Min. 8 characters"
+                        secureText
+                    />
 
-                <AppInput
-                    label="Confirm Password"
-                    // icon="🔒"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    placeholder="••••••••"
-                    secureText
-                />
+                    <AppInput
+                        label="Confirm Password"
+                        // icon="🔒"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        placeholder="••••••••"
+                        secureText
+                    />
 
-                <AppButton
-                    title="REGISTER"
-                    variant="auth"
-                    loading={loading}
-                    onPress={handleSignup}
-                    style={styles.button}
-                />
+                    <AppButton
+                        title="REGISTER"
+                        variant="auth"
+                        loading={loading}
+                        onPress={handleSignup}
+                        style={styles.button}
+                    />
 
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Already have an account? </Text>
-                    <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                        <Text style={styles.footerLink}>LOGIN</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                    <View style={styles.footer}>
+                        <Text style={styles.footerText}>Already have an account? </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                            <Text style={styles.footerLink}>LOGIN</Text>
+                        </TouchableOpacity>
+                    </View>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 };
 
